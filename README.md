@@ -1,13 +1,14 @@
 # SpanningTreeSimulation
 Aufgabe des Netztechnik Labors in 2021/2022. Ziel ist einen Spanning Tree Algorithmus auf Layer 2 zu implementieren.
 
-## Aufbau der Simulation
+### Aufbau der Simulation
 Für jede komponente des Netzwerks wurde ein Objekttyp erstellt. Für jeden Knoten des Netzwerks ist ein Thread vorgesehen. Diese kommunizieren über definierte Links. Dabei findet die Kommunikation über Listen statt. Wo die beiden beteiligten Threads ihre "gesendeten" Messages speichern und die "empfangenen" Nachrichten abrufen. So besteht eine bidirektionale halbduplex Verbindung zwischen den Knoten.
 
-### Klassen
+**Klassen (tbd)**
 
-## Eingabe- und Ausgabeformat
-### Eingabeformat
+### Eingabe- und Ausgabeformat
+**Eingabeformat**
+
 Die Eingabe findet über folgendes definiertes Format in form einer Textdatei statt. Die Datei hat folgenden Aufbau. Gestartet wird mit folgendem:
 ```
 Graph mygraph {
@@ -37,7 +38,9 @@ Folgend werden die Links folgendermaßen definiert: KnotenA - KnotenB : Kosten;.
 }
 ```
 Abgeschlossen mit '}'.
-### Ausgabeformat
+
+**Ausgabeformat**
+
 Der Spanning Tree wird folgendermaßen ausgegeben: 
 ```
 Spanning-Tree of mygraph {

@@ -1,7 +1,6 @@
 import sys
-import json
 from threading import Thread
-from typing import NewType
+import argparse
 
 # Classes
 class Network: 
@@ -100,6 +99,21 @@ class Message:
     def printData(self):
         print("Message: Source={}, Destination={}, rootID={}, sumCosts={}".format(self.source, self.destination, self.rootID, self.sumCosts))
 
+# Argparser
+def parseArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--filepath", help="Path to the .txt file that contains the Network specifications", default="./Inputdateien/graph.txt")
+    args = parser.parse_args()
+    return args
+
+def main():
+    # Parse arguments
+    args = parseArgs()
+    print("Selected file: {}\n".format(args.filepath))
+    # Load the network from the text file
+    network = Network.from_graph_txt(args.filepath)
+    print("Loaded Network:")
+    network.printData()
+
 if __name__ == "__main__":
-    network = Network.from_graph_txt('./Inputdateien/graph.txt')
-    network.exportJSON('./Inputdateien/abnd.txt')
+    main()

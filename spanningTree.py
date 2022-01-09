@@ -99,9 +99,12 @@ class Node:
         link.msgs.append(msg)
 
     def receiveMsg(self, link):
-        for msg in link.msgs:
-            if self.nodeID == msg.destination:
-                return msg
+        link.printData()
+        print(self.nodeID)
+        for i in range(0, len(link.msgs)):
+            if self.nodeID == link.msgs[i].destination:
+                self.msgCnt = self.msgCnt+1
+                return link.msgs.pop(i)
 
 
 class Link:
@@ -148,6 +151,12 @@ def main():
     network = Network.from_graph_txt(args.filepath)
     print("Loaded network:")
     network.printData()
+    network.nodes[0].sendMsg(network.nodes[0].links[0], 5, 6)
+    network.printData()
+    msg = network.nodes[1].receiveMsg(network.nodes[1].links[0])
+    msg.printData()
+    network.printData()
+
 
 if __name__ == "__main__":
     main()

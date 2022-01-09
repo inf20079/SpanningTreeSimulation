@@ -1,3 +1,4 @@
+from os import name
 import sys
 from threading import Thread
 import argparse
@@ -15,9 +16,6 @@ class Network:
         else: 
             self.spanningTree = spanningTree
 
-    def print():
-        pass
-
     @classmethod
     def from_graph_txt(cls, path):
         
@@ -33,18 +31,40 @@ class Network:
                     line = line.replace(' ', '')
                     line = line.replace(';', '')
                     links.append(Link(line[0], line[2], int(line[4:])))
+
+        for link in links:
+            for node in nodes:
+                if node.name == link.leftEnd:
+                    link.leftEnd = int(node.nodeID)
+                if node.name == link.rightEnd:
+                    link.rightEnd = int(node.nodeID)
+            if isinstance(link.leftEnd, str) or isinstance(link.rightEnd, str):
+                print("Error: This Link has no connection to the network:")
+                link.printData()
+                exit(1)
+
         for node in nodes:
             links_for_node = []
             for link in links:
-                if node.name == link.leftEnd or node.name == link.rightEnd:
+                if node.nodeID == link.leftEnd:
+                    links_for_node.append(link)
+                if node.nodeID == link.rightEnd:
                     links_for_node.append(link)
             node.links = links_for_node
+            if node.links == []:
+                print("Error: This node has no connection to the network:")
+                node.printData()
+                exit(1)
+
         return cls(nodes)
 
     def printData(self):
         print("Network: spanningTree={}, nodes:". format(self.spanningTree))
         for node in self.nodes:
             node.printData()
+
+    def testIntegrity(self):
+        pass
 
 
 class Node:
@@ -70,6 +90,19 @@ class Node:
         for link in self.links:
             link.printData()
 
+    def sendMsg(self, link, rootID, sumCosts=0):
+        if self.nodeID == link.leftEnd:
+            destination = link.rightEnd
+        else:
+            destination = link.leftEnd
+        msg = Message(self.nodeID, destination, rootID, sumCosts)
+        link.msgs.append(msg)
+
+    def receiveMsg(self, link):
+        for msg in link.msgs:
+            if self.nodeID == msg.destination:
+                return msg
+
 
 class Link:
     
@@ -83,7 +116,7 @@ class Link:
             self.msgs = msgs
 
     def printData(self):
-        print("Link: leftEnd={}, rightEnd={}, cost={}, msgs:". format(self.leftEnd, self.rightEnd, self.cost))
+        print("Link: leftEnd={},  rightEnd={}, cost={}, msgs:". format(self.leftEnd, self.rightEnd, self.cost))
         for msg in self.msgs:
             msg.printData()
 
@@ -111,8 +144,9 @@ def main():
     args = parseArgs()
     print("Selected file: {}\n".format(args.filepath))
     # Load the network from the text file
+    print("Loading network...")
     network = Network.from_graph_txt(args.filepath)
-    print("Loaded Network:")
+    print("Loaded network:")
     network.printData()
 
 if __name__ == "__main__":

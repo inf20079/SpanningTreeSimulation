@@ -4,8 +4,6 @@ Aufgabe des Netztechnik Labors in 2021/2022. Ziel ist einen Spanning Tree Algori
 ### Aufbau der Simulation
 Für jede komponente des Netzwerks wurde ein Objekttyp erstellt. Für jeden Knoten des Netzwerks ist ein Thread vorgesehen. Diese kommunizieren über definierte Links. Dabei findet die Kommunikation über Listen statt. Wo die beiden beteiligten Threads ihre "gesendeten" Messages speichern und die "empfangenen" Nachrichten abrufen. So besteht eine bidirektionale halbduplex Verbindung zwischen den Knoten.
 
-**Klassen (tbd)**
-
 ### Eingabe- und Ausgabeformat
 **Eingabeformat**
 
@@ -53,3 +51,6 @@ Spanning-Tree of mygraph {
 }
 ```
 Der Root wird mit Root gekennzeichnet, die nächsten Hops von den Knoten immer so: Knoten - Hop;.
+
+
+**Benutzung**

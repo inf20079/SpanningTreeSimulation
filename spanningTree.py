@@ -9,7 +9,7 @@ def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filepath", help="Path to the .txt file that contains the Network specifications", default="./Inputdateien/graph.txt")
     parser.add_argument("-amsg", "--waitformsg", type=int, help="Amount of empty messages before stopping.", default=5)
-    parser.add_argument("-t", "--showtraffic", type=bool, help="Shows every interaction. Slows down routing process.", default=True)
+    parser.add_argument("-t", "--showtraffic", type=bool, help="Shows every interaction. Slows down routing process.", default=False)
     parser.add_argument("-mit", "--maxitems", type=int, help="Max amount of items.", default=50)
     parser.add_argument("-mco", "--maxcost", type=int, help="Max cost.", default=50)
     parser.add_argument("-mid", "--maxid", type=int, help="Max ID.", default=50)

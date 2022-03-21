@@ -18,13 +18,16 @@ def parseArgs():
 
 # Clear console
 def clearConsole():
+    ''' Selects the clear command depending on operating system
+    '''
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
         command = 'cls'
     os.system(command)
 
 class TrafficHandler:
-
+    '''Visualizes the traffic between the different threads. Slows down the process.
+    '''
     def __init__(self, isTrafficEnabled=None, update=None):
         if isTrafficEnabled == None: 
             self.isTrafficEnabled = False
@@ -37,11 +40,15 @@ class TrafficHandler:
         self.update = update
 
     def waitTrafficRelease(self):
+        '''Wait until the traffic handler releases the thread.
+        '''
         if self.isTrafficEnabled == True:
             while self.update == True:
                 time.sleep(0.25)
 
     def showTraffic(self, network):
+        '''Function to visualize the traffic inside the command prompt.
+        '''
         if self.isTrafficEnabled == True and self.update == True:
             clearConsole()
             network.printData()
@@ -49,9 +56,13 @@ class TrafficHandler:
             self.update = False
 
     def updateTrue(self):
+        ''' Sets update to true. The handler will update the console.
+        '''
         self.update = True
 
     def setTrafficEnabled(self):
+        '''Sets the traffic enabled to true. The traffic will be visualized.
+        '''
         self.isTrafficEnabled = True 
 
 # Globals
@@ -63,7 +74,8 @@ lock = threading.Lock()
 
 # Classes
 class Network: 
-    
+    '''Contains all nodes and links. Reads and writes the input and output files.
+    '''
     def __init__(self, nodes=None, spanningTree=None):
         if nodes == None: 
             self.nodes = []
@@ -76,6 +88,8 @@ class Network:
 
     @classmethod
     def from_graph_txt(cls, path, waitformsg, maxId, maxCost, maxItems):
+        ''' Reads network config from defined graph.txt files.
+        '''
         nodes = []
         links = []
         lowestNodeId = None
@@ -104,7 +118,6 @@ class Network:
                         exit(1)
                     links.append(Link(line[0], line[2], int(line[4:])))
                 amtLines = amtLines+1
-
 
         # Replacing name with id in Link objects
         for link in links:
@@ -145,6 +158,8 @@ class Network:
 
     # Fills spanning tree list
     def createSpanningtree(self):
+        '''Reads spanning tree from all nodes and saves it.
+        '''
         translation = {}
         for node in self.nodes:
             translation[node.nodeID] = node.name
@@ -160,11 +175,15 @@ class Network:
 
     # print spanning tree
     def printSpanningtree(self):
+        '''Prints out the saved spanning tree.
+        '''
         print("Spanningtree:")
         print(tabulate(self.spanningTree, headers=["Root", "leftEnd", "rightEnd", "Cost"]))
 
     # Exports spanning tree
     def exportSpanningtree(self, path):
+        '''Writes spanning tree to output file.
+        '''
         # Name of file
         split = path.split("/")
         # Write spanning tree to file
@@ -180,12 +199,16 @@ class Network:
 
     # Prints object data formatted
     def printData(self):
+        '''Prints out network configuration.
+        '''
         print("Network: spanningTree={}, nodes:". format(self.spanningTree))
         for node in self.nodes:
             node.printData()
 
     # Tests for 
     def testIntegrity(self):
+        '''Tests the integrity of the network as defined in the assignment.
+        '''
         rootNode = None
         for node in self.nodes:
             if node.nodeID <= 0:
@@ -200,7 +223,8 @@ class Network:
                 rootNode = node
 
 class Node(threading.Thread):
-    
+    '''Nework node that contains the links on which it can communicate. Can send and receive messages and searches root. 
+    '''
     def __init__(self, name, nodeID, waitformsg=None, links=None, rootID=None, rootCost=None, rootLink=None, msgCnt=0):
         threading.Thread.__init__(self)
         self.name = name
@@ -232,6 +256,8 @@ class Node(threading.Thread):
 
     # Rooting Protocoll
     def run(self):
+        '''Algorithm to search root. Bellman Ford. Goes to sleep if there are 5 iterations without a message. Can be woken by a new message. All the nodes run the algorithm until every node is in the sleep state.
+        '''
         global startSignal, endSignal, lock, exitSignal, Traffic
         msg = None
         iterationsWithoutMsg = 0
@@ -256,7 +282,9 @@ class Node(threading.Thread):
                 link, msg = self.receiveBroadcast()
                 lock.release()
                 # Check for new root
-                if not (msg.rootID < self.rootID or msg.rootID == self.rootID and (msg.sumCosts+link.cost) < self.rootCost):
+                if not (msg.rootID < self.rootID or 
+                        msg.rootID == self.rootID and 
+                        (msg.sumCosts+link.cost) < self.rootCost):
                     # set update (if showtraffic is enabled)
                     Traffic.updateTrue()
                 else:
@@ -294,12 +322,21 @@ class Node(threading.Thread):
 
     # Prints object data formatted
     def printData(self):
+        ''' Prints Node data and link data.
+        '''
         print("Node: name={}, nodeID={}, rootID={}, rootCost={}, rootLink={}, msgCnt={}, links:". format(self.name, self.nodeID, self.rootID, self.rootCost, self.rootLink, self.msgCnt))
         for link in self.links:
             link.printData()
 
     # Creates and sends the defined message 
     def sendUnicast(self, link, rootID, sumCosts=0):
+        '''Sends message to defined link.
+
+        Key Arguments:\n
+        link --> Link on which the message is send.\n
+        rootID --> New root id.\n
+        sumCosts --> Cost to root.
+        '''
         if self.nodeID == link.leftEnd:
             destination = link.rightEnd
         else:
@@ -309,10 +346,18 @@ class Node(threading.Thread):
 
     # Sends a message to all links
     def sendBroadcast(self, rootID, sumCosts=0):
+        '''Sends broadcast to every link.
+
+        Key arguments:\n
+        rootID --> New root id.\n
+        sumCosts --> Cost to root.
+        '''
             for link in self.links:
                 self.sendUnicast(link, rootID, sumCosts)
 
     def checkIfMsgAvailable(self):
+        ''' Checks for new Messages
+        '''
         for link in self.links:
             for i in range(0, len(link.msgs)):
                 if self.nodeID == link.msgs[i].destination:
@@ -321,6 +366,11 @@ class Node(threading.Thread):
 
     # Grabs the first found message and returns it
     def receiveUnicast(self, link):
+        '''Grabs first message from defined link.
+
+        Key Arguments:\n
+        link --> Link from which the message is grabbed.
+        '''
         for i in range(0, len(link.msgs)):
             if self.nodeID == link.msgs[i].destination:
                 self.msgCnt = self.msgCnt+1
@@ -328,13 +378,16 @@ class Node(threading.Thread):
 
     # Grabs the first message from all links
     def receiveBroadcast(self):
+        '''Grabs first message from all links.
+        '''
         for link in self.links:
             msg = self.receiveUnicast(link)
             if msg != None: return link, msg
         return None, None
 
 class Link:
-    
+    '''Link on which two nodes communicate.
+    '''
     def __init__(self, leftEnd, rightEnd, cost, msgs=None):
         self.leftEnd = leftEnd
         self.rightEnd = rightEnd
@@ -346,12 +399,15 @@ class Link:
 
     # Prints object data formatted
     def printData(self):
+        '''Prints the link data.
+        '''
         print("Link: leftEnd={},  rightEnd={}, cost={}, msgs:". format(self.leftEnd, self.rightEnd, self.cost))
         for msg in self.msgs:
             msg.printData()
 
 class Message:
-    
+    '''Message a node can send.
+    '''
     def __init__(self, source, destination, rootID, sumCosts=0):
         self.source = source
         self.destination = destination
@@ -360,10 +416,14 @@ class Message:
 
     # Prints object data formatted
     def printData(self):
+        ''' Prints message data.
+        '''
         print("Message: Source={}, Destination={}, rootID={}, sumCosts={}".format(self.source, self.destination, self.rootID, self.sumCosts))
 
 
 def main():
+    '''THe main method which creates the network and its dependencies. Starts and stops the algorithm.
+    '''
     global startSignal, endSignal, exitSignal, Traffic
 
     # Parse arguments

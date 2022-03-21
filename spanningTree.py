@@ -352,8 +352,8 @@ class Node(threading.Thread):
         rootID --> New root id.\n
         sumCosts --> Cost to root.
         '''
-            for link in self.links:
-                self.sendUnicast(link, rootID, sumCosts)
+        for link in self.links:
+            self.sendUnicast(link, rootID, sumCosts)
 
     def checkIfMsgAvailable(self):
         ''' Checks for new Messages

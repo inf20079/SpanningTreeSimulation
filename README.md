@@ -1,5 +1,6 @@
 # SpanningTreeSimulation
 Aufgabe des Netztechnik Labors in 2021/2022. Ziel ist einen Spanning Tree Algorithmus auf Layer 2 zu implementieren.
+Github: https://github.com/inf20079/SpanningTreeSimulation
 
 ### Aufbau der Simulation
 Für jede komponente des Netzwerks wurde ein Objekttyp erstellt. Für jeden Knoten des Netzwerks ist ein Thread vorgesehen. Diese kommunizieren über definierte Links. Dabei findet die Kommunikation über Listen statt. Wo die beiden beteiligten Threads ihre "gesendeten" Messages speichern und die "empfangenen" Nachrichten abrufen. Der Link stellt dabei ein shared media (zwischen Threads) dar und wird über ein Semaphor abgesichert.
@@ -61,7 +62,11 @@ Der Root wird mit Root gekennzeichnet, die nächsten Hops von den Knoten immer s
 ```
 pip install -r requirements.txt
 ```
-2. Aufrufen des Skripts (-help für Argumente). Argumente:
+2. Aufrufen des Skripts (-help für Argumente). 
+```
+python spanningTree.py <Argumente>
+```
+<br>Argumente:
 - "-f", "--filepath": Path to the .txt file that contains the Network specifications (default=./Inputdateien/graph.txt).
 - "-amsg", "--waitformsg": Amount of empty messages before stopping (default=5).
 - "-t", "--showtraffic": Shows every interaction. Slows down routing process (default=False).

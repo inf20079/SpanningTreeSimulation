@@ -330,13 +330,13 @@ class Node(threading.Thread):
 
     # Creates and sends the defined message 
     def sendUnicast(self, link, rootID, sumCosts=0):
-        '''Sends message to defined link.
+        """_summary_
 
-        Key Arguments:\n
-        link --> Link on which the message is send.\n
-        rootID --> New root id.\n
-        sumCosts --> Cost to root.
-        '''
+        Args:
+            link (_type_): _description_
+            rootID (_type_): _description_
+            sumCosts (int, optional): _description_. Defaults to 0.
+        """
         if self.nodeID == link.leftEnd:
             destination = link.rightEnd
         else:
@@ -422,8 +422,11 @@ class Message:
 
 
 def main():
-    '''THe main method which creates the network and its dependencies. Starts and stops the algorithm.
-    '''
+    """The main method which creates the network and its dependencies. Starts and stops the algorithm.
+
+    Args:
+    - 
+    """
     global startSignal, endSignal, exitSignal, Traffic
 
     # Parse arguments
